@@ -6,24 +6,25 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=trojan-go
-PKG_VERSION:=0.7.8
+PKG_VERSION:=0.8.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/p4gefau1t/trojan-go.git
-PKG_SOURCE_VERSION:=9866c030058870bf18d60f1d3677c6d4ed9de35d
+PKG_SOURCE_VERSION:=c010e7dda15142a633f43ce74bf8a822f37cd84f
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION)
 
 PKG_CONFIG_DEPENDS := \
 	CONFIG_TROJAN_GO_COMPRESS_GOPROXY \
-	CONFIG_TROJAN_GO_COMPRESS_UPX \
+	CONFIG_TROJAN_GO_COMPRESS_UPX
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/p4gefau1t/trojan-go
+GO_PKG_TAG:=-tags full
 GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:= \
 	$(GO_PKG)/constant.Version=$(PKG_VERSION) \
@@ -35,7 +36,7 @@ include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
-	DEPENDS:=$$(GO_ARCH_DEPENDS)
+	DEPENDS:=$(GO_ARCH_DEPENDS)
 	TITLE:=An unidentifiable mechanism that helps you bypass GFW. It's compatible with original trojan with experimental features.
 	URL:=https://github.com/p4gefau1t/trojan-go
 endef
@@ -69,7 +70,7 @@ endef
 define Build/Compile
 	$(eval GO_PKG_BUILD_PKG:=$(GO_PKG))
 	$(call GoPackage/Build/Configure)
-	$(call GoPackage/Build/Compile)
+	$(call GoPackage/Build/Compile,$(GO_PKG_TAG))
 ifeq ($(CONFIG_TROJAN_GO_COMPRESS_UPX),y)
 	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/$(PKG_NAME)
 endif
